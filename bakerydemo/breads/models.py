@@ -2,16 +2,17 @@ from django import forms
 from django.db import models
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from modelcluster.fields import ParentalManyToManyField
+from modelcluster.fields import ParentalManyToManyField, ParentalKey
 
 from wagtail.admin.edit_handlers import (
-    FieldPanel, MultiFieldPanel, StreamFieldPanel
+    FieldPanel, MultiFieldPanel, StreamFieldPanel, InlinePanel
 )
 from wagtail.core.fields import StreamField
-from wagtail.core.models import Page
+from wagtail.core.models import Page, Orderable
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.documents.edit_handlers import DocumentChooserPanel
 
 from bakerydemo.base.blocks import BaseStreamBlock
 
@@ -128,6 +129,7 @@ class BreadPage(Page):
         StreamFieldPanel('body'),
         FieldPanel('origin'),
         FieldPanel('bread_type'),
+        InlinePanel('documents', label="Documents"),
         MultiFieldPanel(
             [
                 FieldPanel(
@@ -145,6 +147,17 @@ class BreadPage(Page):
     ]
 
     parent_page_types = ['BreadsIndexPage']
+
+
+class MyPageDocumentLink(Orderable):
+    page = ParentalKey(BreadPage, related_name='documents')
+    document = models.ForeignKey(
+        'wagtaildocs.Document', on_delete=models.CASCADE, related_name='+'
+    )
+
+    panels = [
+        DocumentChooserPanel('document'),
+    ]
 
 
 class BreadsIndexPage(Page):

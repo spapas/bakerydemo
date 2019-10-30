@@ -20,6 +20,26 @@
                         {% endif %}
 
                         {{ page.body }}
+                        
+                    </div>
+                    <hr />
+                    <div class="row">
+                        
+                        {% with docs=page.documents.all %}
+                                {% if docs %}
+                                        <h3>Documents</h3>
+                                        <ul>
+                                            {% for doc in docs %}
+                                                <li>
+                                                    <a href='{{ doc.document.url }}'>{{ doc.document.title }}</a>
+
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                {% else %}
+                                    No documents!
+                                {% endif %}
+                            {% endwith %}
                     </div>
                 </div>
 
